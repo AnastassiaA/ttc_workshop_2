@@ -13,8 +13,8 @@ class ThreadHook extends StatelessWidget {
       ),
       drawer: MyDrawer(),
       bottomNavigationBar: BottomNavigationBar(
-        fixedColor: Colors.green[400],
-        currentIndex: 0, // this will be set when a new tab is tapped
+        //fixedColor: Colors.green[400],
+        //currentIndex: 0, // this will be set when a new tab is tapped
         items: [
           BottomNavigationBarItem(
             backgroundColor: Colors.green[400],

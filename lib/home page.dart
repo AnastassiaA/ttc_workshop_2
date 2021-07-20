@@ -51,7 +51,7 @@ class _ExpandFloatButtonState extends State<ExpandFloatButton> {
         //shape: ShapeBorder.lerp(a, b, t),
         title: const Text('TTC Workshop'),
       ),
-      //drawer: MyDrawer(),
+      drawer: MyDrawer(),
       floatingActionButton: ExpandableFab(
         distance: 112.0,
         children: [

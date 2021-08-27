@@ -7,8 +7,10 @@ class ThreadHook extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffE9DCE5),
       appBar: AppBar(
-        backgroundColor: Colors.green[400],
+        backgroundColor: const Color(0xff540E32),
+        foregroundColor: Colors.white,
         title: const Text('Yarns, Hooks, etc.'),
       ),
       drawer: MyDrawer(),

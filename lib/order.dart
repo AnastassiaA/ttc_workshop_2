@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'drawer.dart';
+import 'dart:math';
 //===============================================//
 
 class Order {
-  int orderNum = 0;
+  String orderNum = '';
   String orderName = '';
   String customerName = '';
   String craftType = ''; //knit or crochet
@@ -16,8 +17,10 @@ class OrderHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffE9DCE5),
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey[400],
+        backgroundColor: const Color(0xff720058),
+        foregroundColor: Colors.white,
         title: const Text('Orders'),
       ),
       drawer: MyDrawer(),
@@ -30,7 +33,7 @@ class OrderHome extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
+        backgroundColor: const Color(0xffceb98e),
         foregroundColor: Colors.black,
         onPressed: () {
           Navigator.push(
@@ -81,7 +84,8 @@ class AddOrderState extends State<AddOrderForm> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String dropdownValue = '-';
+  String dropdownValue = 'None';
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -102,7 +106,7 @@ class AddOrderState extends State<AddOrderForm> {
                   dropdownValue = newValue!;
                 });
               },
-              items: <String>['-', 'Knit', 'Crochet']
+              items: <String>['None', 'Knit', 'Crochet']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -126,6 +130,17 @@ class AddOrderState extends State<AddOrderForm> {
         ],
       ),
     );
+  }
+
+  String generateOrderNumber(String typeChoice) {
+    Random random = new Random();
+    int number = random.nextInt(1000000);
+
+    String typeLetter = typeChoice.substring(0, 1);
+
+    String orderNumber = typeLetter + number.toString().padLeft(6, '0');
+
+    return orderNumber;
   }
 }
 

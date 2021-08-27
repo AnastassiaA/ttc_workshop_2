@@ -142,8 +142,10 @@ class ProductState extends State<Product> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffE9DCE5),
       appBar: AppBar(
-        backgroundColor: Colors.teal[400],
+        backgroundColor: const Color(0xff66023C),
+        foregroundColor: Colors.white,
         title: const Text('Product Catalogue'),
       ),
       drawer: MyDrawer(),

@@ -14,19 +14,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ExpandFloatButton(),
+      home: MyHomePage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
 @immutable
-class ExpandFloatButton extends StatefulWidget {
+class MyHomePage extends StatefulWidget {
   @override
-  _ExpandFloatButtonState createState() => _ExpandFloatButtonState();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _ExpandFloatButtonState extends State<ExpandFloatButton> {
+class _MyHomePageState extends State<MyHomePage> {
   // late Future<int> _totalExpense = Future<String>.delayed(
   //   const Duration(seconds: 2),
   //   () => 'Loading',
@@ -45,32 +45,20 @@ class _ExpandFloatButtonState extends State<ExpandFloatButton> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffE9DCE5),
       appBar: AppBar(
-        backgroundColor: Colors.deepPurple[600],
+        backgroundColor: const Color(0xff78184A),
         foregroundColor: Colors.white,
         //shape: ShapeBorder.lerp(a, b, t),
         title: const Text('TTC Workshop'),
       ),
       drawer: MyDrawer(),
       floatingActionButton: ExpandableFab(
-        distance: 112.0,
+        distance: 115.0,
         children: [
           FloatingActionButton.extended(
-            heroTag: "OrderButton",
-            backgroundColor: const Color(0xff03dac6),
-            foregroundColor: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddOrder()),
-              );
-            },
-            icon: Icon(Icons.add),
-            label: Text('ORDERS'),
-          ),
-          FloatingActionButton.extended(
             heroTag: "ExpenseButton",
-            backgroundColor: const Color(0xff03dac6),
+            backgroundColor: const Color(0xff997ABD),
             foregroundColor: Colors.black,
             onPressed: () {
               Navigator.push(
@@ -81,6 +69,32 @@ class _ExpandFloatButtonState extends State<ExpandFloatButton> {
             icon: Icon(Icons.add),
             label: Text('EXPENSE'),
           ),
+          FloatingActionButton.extended(
+            heroTag: "OrderButton",
+            backgroundColor: const Color(0xff997ABD),
+            foregroundColor: Colors.black,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddOrder()),
+              );
+            },
+            icon: Icon(Icons.add),
+            label: Text('ORDERS'),
+          ),
+          // FloatingActionButton.extended(
+          //   heroTag: "PaymentsButton",
+          //   backgroundColor: const Color(0xff997ABD),
+          //   foregroundColor: Colors.black,
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => AddOrder()),
+          //     );
+          //   },
+          //   icon: Icon(Icons.add),
+          //   label: Text('PAYMENT'),
+          // ),
         ],
       ),
       body: SingleChildScrollView(
@@ -93,6 +107,7 @@ class _ExpandFloatButtonState extends State<ExpandFloatButton> {
                   child: SizedBox(
                     height: 70.0,
                     child: Card(
+                      //color: const Color(0xff78184A),
                       child: Column(
                         children: [
                           Text('Expense'),
@@ -141,12 +156,13 @@ class _ExpandFloatButtonState extends State<ExpandFloatButton> {
     ExpenseAndRevenue(
       type: "Expense",
       amount: 10000, //TODO get this from database
-      barColor: charts.ColorUtil.fromDartColor(Colors.red),
+      barColor: charts.ColorUtil.fromDartColor(const Color(0xff67032F)),
+      //charts.ColorUtil.fromDartColor(Colors.red),
     ),
     ExpenseAndRevenue(
       type: "Revenue",
       amount: 15000, //TODO get this from database
-      barColor: charts.ColorUtil.fromDartColor(Colors.green),
+      barColor: charts.ColorUtil.fromDartColor(const Color(0xffE0B0FF)),
     ),
   ];
 }
@@ -325,6 +341,7 @@ class _ExpandableFabState extends State<ExpandableFab>
           curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
           duration: const Duration(milliseconds: 250),
           child: FloatingActionButton(
+            backgroundColor: const Color(0xff997ABD),
             onPressed: _toggle,
             child: const Icon(
               Icons.create,
@@ -373,36 +390,6 @@ class _ExpandingActionButton extends StatelessWidget {
       child: FadeTransition(
         opacity: progress,
         child: child,
-      ),
-    );
-  }
-}
-
-@immutable
-class ActionButton extends StatelessWidget {
-  const ActionButton({
-    Key? key,
-    this.onPressed,
-    required this.icon,
-  }) : super(key: key);
-
-  final VoidCallback? onPressed;
-  final Widget icon;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Material(
-      shape: const CircleBorder(),
-      clipBehavior: Clip.antiAlias,
-      color: theme.accentColor,
-      elevation: 4.0,
-      child: IconTheme.merge(
-        data: theme.accentIconTheme,
-        child: IconButton(
-          onPressed: onPressed,
-          icon: icon,
-        ),
       ),
     );
   }

@@ -6,12 +6,43 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ttc_workshop_2/models/model_expense.dart';
 
+class ExpenseDatabase {
+  static final ExpenseDatabase instance = ExpenseDatabase._init();
+
+  static Database? _database;
+
+  ExpenseDatabase._init();
+
+  Future<Database?> get database async {
+    if (_database != null) return _database;
+
+    _database = await _initializeDB('TTwineCommissions.sql');
+    return _database!;
+  }
+
+  Future<Database> _initializeDB(String filePath) async {
+    final databasePath = await getDatabasesPath();
+
+    final path = join(databasePath, filePath);
+
+    return await openDatabase(path, version: 1);
+  }
+
+  //Future _createDB(Database dataB, int version) async {}
+
+  Future close() async {
+    final dataB = await instance.database;
+
+    dataB?.close();
+  }
+}
+
 class ExpenseDatabasehelper {
   Future main() async {
     WidgetsFlutterBinding.ensureInitialized();
 
     final database =
-        openDatabase(join(await getDatabasesPath(), 'TTwineCommissions.db'));
+        openDatabase(join(await getDatabasesPath(), 'TTwineCommissions.sql'));
 
     //add
     Future<void> insertExpense(Expense expense) async {

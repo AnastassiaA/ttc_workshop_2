@@ -13,14 +13,25 @@ class ExpenseHome extends StatefulWidget {
 }
 
 class ExpenseState extends State<ExpenseHome> {
+  final items = List<String>.generate(20, (i) => "Item $i");
+
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffE9DCE5),
       appBar: AppBar(
-        backgroundColor: Colors.teal[400],
+        backgroundColor: const Color(0xff2C041C),
+        foregroundColor: Colors.white,
         title: const Text('Expenses'),
       ),
       drawer: MyDrawer(),
-      body: Container(),
+      body: ListView.builder(
+        itemCount: items.length,
+        itemBuilder: (context, index) {
+          return ListTile(
+            title: Text('${items[index]}'),
+          );
+        },
+      ),
     );
   }
 }

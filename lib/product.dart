@@ -141,110 +141,112 @@ class ProductState extends State<Product> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xffE9DCE5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xff66023C),
-        foregroundColor: Colors.white,
-        title: const Text('Product Catalogue'),
-      ),
-      drawer: MyDrawer(),
-      body: GridView.builder(
-        primary: false,
-        padding: const EdgeInsets.all(20),
-        //itemCount: options.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
-        itemBuilder: (BuildContext context, int index) {
-          return Container();
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xff03dac6),
-        foregroundColor: Colors.black,
-        onPressed: () {
-          //==========Add Item Form begins=========//
-          Alert(
-              context: context,
-              title: "Add New Item",
-              content: Column(
-                children: <Widget>[
-                  Container(
-                      child: TextButton.icon(
-                    onPressed: () {
-                      //FilePickerDemo();
-                      _openFileExplorer();
-                    },
-                    icon: Icon(Icons.add, size: 18),
-                    label: Text("Add Image"),
-                  )),
-                  Container(
-                    child: TextField(
-                      controller: itemID,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.lock),
-                        labelText: 'Item ID',
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: TextField(
-                      controller: itemName,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.lock),
-                        labelText: 'Item Name',
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: TextField(
-                      controller: itemPrice,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.lock),
-                        labelText: 'Item Price',
-                      ),
-                    ),
-                  ),
-                  Container(
-                    child: DropdownButton<String>(
-                      value: dropdownValue,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          dropdownValue = newValue!;
-                        });
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xffE9DCE5),
+        appBar: AppBar(
+          backgroundColor: const Color(0xff66023C),
+          foregroundColor: Colors.white,
+          title: const Text('Product Catalogue'),
+        ),
+        drawer: MyDrawer(),
+        body: GridView.builder(
+          primary: false,
+          padding: const EdgeInsets.all(20),
+          //itemCount: options.length,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2, crossAxisSpacing: 4.0, mainAxisSpacing: 4.0),
+          itemBuilder: (BuildContext context, int index) {
+            return Container();
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: const Color(0xff03dac6),
+          foregroundColor: Colors.black,
+          onPressed: () {
+            //==========Add Item Form begins=========//
+            Alert(
+                context: context,
+                title: "Add New Item",
+                content: Column(
+                  children: <Widget>[
+                    Container(
+                        child: TextButton.icon(
+                      onPressed: () {
+                        //FilePickerDemo();
+                        _openFileExplorer();
                       },
-                      items: <String>['-', 'Knit', 'Crochet']
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+                      icon: Icon(Icons.add, size: 18),
+                      label: Text("Add Image"),
+                    )),
+                    Container(
+                      child: TextField(
+                        controller: itemID,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.lock),
+                          labelText: 'Item ID',
+                        ),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              buttons: [
-                DialogButton(
-                  onPressed: () {
-                    setState(() {
-                      itemID.text;
-                      itemName.text;
-                      itemPrice.text;
-                    });
-                  },
-                  child: Text(
-                    "Add",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                )
-              ]).show();
-          //=============Add Item Form ends===========//
-        },
-        child: Icon(Icons.add),
+                    Container(
+                      child: TextField(
+                        controller: itemName,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.lock),
+                          labelText: 'Item Name',
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: TextField(
+                        controller: itemPrice,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          icon: Icon(Icons.lock),
+                          labelText: 'Item Price',
+                        ),
+                      ),
+                    ),
+                    Container(
+                      child: DropdownButton<String>(
+                        value: dropdownValue,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            dropdownValue = newValue!;
+                          });
+                        },
+                        items: <String>['-', 'Knit', 'Crochet']
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Text(value),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+                buttons: [
+                  DialogButton(
+                    onPressed: () {
+                      setState(() {
+                        itemID.text;
+                        itemName.text;
+                        itemPrice.text;
+                      });
+                    },
+                    child: Text(
+                      "Add",
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  )
+                ]).show();
+            //=============Add Item Form ends===========//
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }

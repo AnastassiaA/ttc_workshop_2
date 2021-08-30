@@ -44,109 +44,111 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xffE9DCE5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xff78184A),
-        foregroundColor: Colors.white,
-        //shape: ShapeBorder.lerp(a, b, t),
-        title: const Text('TTC Workshop'),
-      ),
-      drawer: MyDrawer(),
-      floatingActionButton: ExpandableFab(
-        distance: 115.0,
-        children: [
-          FloatingActionButton.extended(
-            heroTag: "ExpenseButton",
-            backgroundColor: const Color(0xff997ABD),
-            foregroundColor: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddOrder()),
-              );
-            },
-            icon: Icon(Icons.add),
-            label: Text('EXPENSE'),
-          ),
-          FloatingActionButton.extended(
-            heroTag: "OrderButton",
-            backgroundColor: const Color(0xff997ABD),
-            foregroundColor: Colors.black,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddOrder()),
-              );
-            },
-            icon: Icon(Icons.add),
-            label: Text('ORDERS'),
-          ),
-          // FloatingActionButton.extended(
-          //   heroTag: "PaymentsButton",
-          //   backgroundColor: const Color(0xff997ABD),
-          //   foregroundColor: Colors.black,
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) => AddOrder()),
-          //     );
-          //   },
-          //   icon: Icon(Icons.add),
-          //   label: Text('PAYMENT'),
-          // ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            ExpenseAndRevenueChart(data: data),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: SizedBox(
-                    height: 70.0,
-                    child: Card(
-                      //color: const Color(0xff78184A),
-                      child: Column(
-                        children: [
-                          Text('Expense'),
-                          // FutureBuilder<int>(
-                          //   future: _totalExpense,
-                          //   builder: (ex, snapshot) {},
-                          // )
-                        ],
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xffE9DCE5),
+        appBar: AppBar(
+          backgroundColor: const Color(0xff78184A),
+          foregroundColor: Colors.white,
+          //shape: ShapeBorder.lerp(a, b, t),
+          title: const Text('TTC Workshop'),
+        ),
+        drawer: MyDrawer(),
+        floatingActionButton: ExpandableFab(
+          distance: 115.0,
+          children: [
+            FloatingActionButton.extended(
+              heroTag: "ExpenseButton",
+              backgroundColor: const Color(0xff997ABD),
+              foregroundColor: Colors.black,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddOrder()),
+                );
+              },
+              icon: Icon(Icons.add),
+              label: Text('EXPENSE'),
+            ),
+            FloatingActionButton.extended(
+              heroTag: "OrderButton",
+              backgroundColor: const Color(0xff997ABD),
+              foregroundColor: Colors.black,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddOrder()),
+                );
+              },
+              icon: Icon(Icons.add),
+              label: Text('ORDERS'),
+            ),
+            // FloatingActionButton.extended(
+            //   heroTag: "PaymentsButton",
+            //   backgroundColor: const Color(0xff997ABD),
+            //   foregroundColor: Colors.black,
+            //   onPressed: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => AddOrder()),
+            //     );
+            //   },
+            //   icon: Icon(Icons.add),
+            //   label: Text('PAYMENT'),
+            // ),
+          ],
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              ExpenseAndRevenueChart(data: data),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: SizedBox(
+                      height: 70.0,
+                      child: Card(
+                        //color: const Color(0xff78184A),
+                        child: Column(
+                          children: [
+                            Text('Expense'),
+                            // FutureBuilder<int>(
+                            //   future: _totalExpense,
+                            //   builder: (ex, snapshot) {},
+                            // )
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                Expanded(
-                  child: SizedBox(
-                    height: 70.0,
-                    child: Card(child: Text('Revenue')),
+                  Expanded(
+                    child: SizedBox(
+                      height: 70.0,
+                      child: Card(child: Text('Revenue')),
+                    ),
                   ),
-                ),
-                //SizedBox(),
-              ],
-            ),
-            Row(
-              children: <Widget>[
-                Expanded(
-                  child: SizedBox(
-                    height: 70.0,
-                    child: Card(child: Text('Orders In Progress')),
+                  //SizedBox(),
+                ],
+              ),
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: SizedBox(
+                      height: 70.0,
+                      child: Card(child: Text('Orders In Progress')),
+                    ),
                   ),
-                ),
-                Expanded(
-                  child: SizedBox(
-                    height: 70.0,
-                    child: Card(child: Text('Orders Pending')),
+                  Expanded(
+                    child: SizedBox(
+                      height: 70.0,
+                      child: Card(child: Text('Orders Pending')),
+                    ),
                   ),
-                ),
-                //SizedBox(),
-              ],
-            ),
-          ],
+                  //SizedBox(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

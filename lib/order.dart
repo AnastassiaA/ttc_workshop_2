@@ -16,32 +16,34 @@ class OrderHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xffE9DCE5),
-      appBar: AppBar(
-        backgroundColor: const Color(0xff720058),
-        foregroundColor: Colors.white,
-        title: const Text('Orders'),
-      ),
-      drawer: MyDrawer(),
-      body: ListView.builder(
-        itemCount: items.length,
-        itemBuilder: (context, index) {
-          return ListTile(
-            title: Text('${items[index]}'),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xffceb98e),
-        foregroundColor: Colors.black,
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => AddOrder()),
-          );
-        },
-        child: Icon(Icons.add),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xffE9DCE5),
+        appBar: AppBar(
+          backgroundColor: const Color(0xff720058),
+          foregroundColor: Colors.white,
+          title: const Text('Orders'),
+        ),
+        drawer: MyDrawer(),
+        body: ListView.builder(
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text('${items[index]}'),
+            );
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: const Color(0xffceb98e),
+          foregroundColor: Colors.black,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddOrder()),
+            );
+          },
+          child: Icon(Icons.add),
+        ),
       ),
     );
   }

@@ -34,7 +34,7 @@ class OrderHome extends StatelessWidget {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: const Color(0xffceb98e),
+          backgroundColor: const Color(0xff997ABD),
           foregroundColor: Colors.black,
           onPressed: () {
             Navigator.push(
@@ -54,11 +54,13 @@ class OrderHome extends StatelessWidget {
 class AddOrder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Add Order'),
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('Add Order'),
+        ),
+        body: AddOrderForm(),
       ),
-      body: AddOrderForm(),
     );
   }
 }
@@ -92,44 +94,49 @@ class AddOrderState extends State<AddOrderForm> {
   Widget build(BuildContext context) {
     return Form(
       key: _formKey,
-      child: Column(
-        children: [
-          Container(
-            child: TextFormField(
-              decoration: InputDecoration(labelText: 'Customer Name'),
-              autofocus: true,
-            ),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Container(
+                child: TextFormField(
+                  decoration: InputDecoration(labelText: 'Customer Name'),
+                  autofocus: true,
+                ),
+              ),
+              Container(
+                child: DropdownButton<String>(
+                  value: dropdownValue,
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      dropdownValue = newValue!;
+                    });
+                  },
+                  items: <String>['None', 'Knit', 'Crochet']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                ),
+              ),
+              Container(
+                child: TextFormField(
+                  decoration: InputDecoration(labelText: 'Tool'),
+                  autofocus: true,
+                ),
+              ),
+              Container(
+                child: TextFormField(
+                  decoration: InputDecoration(labelText: 'Thread'),
+                  autofocus: true,
+                ),
+              ),
+            ],
           ),
-          Container(
-            child: DropdownButton<String>(
-              value: dropdownValue,
-              onChanged: (String? newValue) {
-                setState(() {
-                  dropdownValue = newValue!;
-                });
-              },
-              items: <String>['None', 'Knit', 'Crochet']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
-            ),
-          ),
-          Container(
-            child: TextFormField(
-              decoration: InputDecoration(labelText: 'Tool'),
-              autofocus: true,
-            ),
-          ),
-          Container(
-            child: TextFormField(
-              decoration: InputDecoration(labelText: 'Thread'),
-              autofocus: true,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

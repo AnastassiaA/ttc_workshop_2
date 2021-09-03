@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ttc_workshop_2/order.dart';
 import 'drawer.dart';
 import 'package:ttc_workshop_2/db_code/db_expense.dart';
-
 import 'package:charts_flutter/flutter.dart' as charts;
-
-import 'drawer.dart';
 
 class MyApp extends StatelessWidget {
   @override
@@ -83,19 +80,6 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.add),
               label: Text('ORDERS'),
             ),
-            // FloatingActionButton.extended(
-            //   heroTag: "PaymentsButton",
-            //   backgroundColor: const Color(0xff997ABD),
-            //   foregroundColor: Colors.black,
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (context) => AddOrder()),
-            //     );
-            //   },
-            //   icon: Icon(Icons.add),
-            //   label: Text('PAYMENT'),
-            // ),
           ],
         ),
         body: SingleChildScrollView(

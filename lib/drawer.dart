@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ttc_workshop_2/main.dart';
+import 'package:ttc_workshop_2/miscInfo.dart';
 import 'package:ttc_workshop_2/product.dart';
 import 'package:ttc_workshop_2/order.dart';
 import 'package:ttc_workshop_2/tool.dart';
@@ -106,6 +107,17 @@ class MyDrawer extends StatelessWidget {
             //Instagram and Facebook
             tileColor: const Color(0xff997ABD),
             onTap: () {},
+          ),
+          ListTile(
+            title: Text('Misc Info'),
+            //Brands, Sellers
+            tileColor: const Color(0xff997ABD),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MiscInfo()),
+              );
+            },
           ),
         ],
       ),

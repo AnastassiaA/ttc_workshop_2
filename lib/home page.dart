@@ -5,10 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:ttc_workshop_2/order.dart';
 import 'drawer.dart';
 import 'package:ttc_workshop_2/db_code/db_expense.dart';
-
-import 'package:charts_flutter/flutter.dart' as charts;
-
-import 'drawer.dart';
+//import 'package:charts_flutter/flutter.dart' as charts;
 
 class MyApp extends StatelessWidget {
   @override
@@ -48,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
       child: Scaffold(
         backgroundColor: const Color(0xffE9DCE5),
         appBar: AppBar(
-          backgroundColor: const Color(0xff78184A),
+          backgroundColor: const Color(0xff693b58),
           foregroundColor: Colors.white,
           //shape: ShapeBorder.lerp(a, b, t),
           title: const Text('TTC Workshop'),
@@ -83,25 +80,12 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.add),
               label: Text('ORDERS'),
             ),
-            // FloatingActionButton.extended(
-            //   heroTag: "PaymentsButton",
-            //   backgroundColor: const Color(0xff997ABD),
-            //   foregroundColor: Colors.black,
-            //   onPressed: () {
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(builder: (context) => AddOrder()),
-            //     );
-            //   },
-            //   icon: Icon(Icons.add),
-            //   label: Text('PAYMENT'),
-            // ),
           ],
         ),
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              ExpenseAndRevenueChart(data: data),
+              //ExpenseAndRevenueChart(data: data),
               Row(
                 children: <Widget>[
                   Expanded(
@@ -154,63 +138,63 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  final List<ExpenseAndRevenue> data = [
-    ExpenseAndRevenue(
-      type: "Expense",
-      amount: 10000, //TODO get this from database
-      barColor: charts.ColorUtil.fromDartColor(const Color(0xff67032F)),
-      //charts.ColorUtil.fromDartColor(Colors.red),
-    ),
-    ExpenseAndRevenue(
-      type: "Revenue",
-      amount: 15000, //TODO get this from database
-      barColor: charts.ColorUtil.fromDartColor(const Color(0xffE0B0FF)),
-    ),
-  ];
+  // final List<ExpenseAndRevenue> data = [
+  //   ExpenseAndRevenue(
+  //     type: "Expense",
+  //     amount: 10000, //TODO get this from database
+  //     barColor: charts.ColorUtil.fromDartColor(const Color(0xff67032F)),
+  //     //charts.ColorUtil.fromDartColor(Colors.red),
+  //   ),
+  //   ExpenseAndRevenue(
+  //     type: "Revenue",
+  //     amount: 15000, //TODO get this from database
+  //     barColor: charts.ColorUtil.fromDartColor(const Color(0xffE0B0FF)),
+  //   ),
+  // ];
 }
 
-class ExpenseAndRevenue {
-  final String type;
-  final double amount;
-  final charts.Color barColor;
+// class ExpenseAndRevenue {
+//   final String type;
+//   final double amount;
+//   final charts.Color barColor;
+//
+//   ExpenseAndRevenue(
+//       {required this.type, required this.amount, required this.barColor});
+// }
 
-  ExpenseAndRevenue(
-      {required this.type, required this.amount, required this.barColor});
-}
-
-class ExpenseAndRevenueChart extends StatelessWidget {
-  final List<ExpenseAndRevenue> data;
-
-  ExpenseAndRevenueChart({required this.data});
-
-  @override
-  Widget build(BuildContext context) {
-    List<charts.Series<ExpenseAndRevenue, String>> series = [
-      charts.Series(
-        id: "Expense and Revenue",
-        data: data,
-        domainFn: (ExpenseAndRevenue series, _) => series.type,
-        measureFn: (ExpenseAndRevenue series, _) => series.amount,
-        colorFn: (ExpenseAndRevenue series, _) => series.barColor,
-      )
-    ];
-    return Container(
-      height: 400,
-      padding: EdgeInsets.all(20),
-      child: Card(
-        child: Column(
-          children: <Widget>[
-            Text(
-              "How Things Are Going",
-              style: Theme.of(context).textTheme.bodyText1,
-            ),
-            Expanded(child: charts.BarChart(series, animate: true))
-          ],
-        ),
-      ),
-    );
-  }
-}
+// class ExpenseAndRevenueChart extends StatelessWidget {
+//   final List<ExpenseAndRevenue> data;
+//
+//   ExpenseAndRevenueChart({required this.data});
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     List<charts.Series<ExpenseAndRevenue, String>> series = [
+//       charts.Series(
+//         id: "Expense and Revenue",
+//         data: data,
+//         domainFn: (ExpenseAndRevenue series, _) => series.type,
+//         measureFn: (ExpenseAndRevenue series, _) => series.amount,
+//         colorFn: (ExpenseAndRevenue series, _) => series.barColor,
+//       )
+//     ];
+//     return Container(
+//       height: 400,
+//       padding: EdgeInsets.all(20),
+//       child: Card(
+//         child: Column(
+//           children: <Widget>[
+//             Text(
+//               "How Things Are Going",
+//               style: Theme.of(context).textTheme.bodyText1,
+//             ),
+//             Expanded(child: charts.BarChart(series, animate: true))
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 @immutable
 class ExpandableFab extends StatefulWidget {

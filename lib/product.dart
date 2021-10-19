@@ -145,7 +145,7 @@ class ProductState extends State<Product> {
       child: Scaffold(
         backgroundColor: const Color(0xffE9DCE5),
         appBar: AppBar(
-          backgroundColor: const Color(0xff66023C),
+          backgroundColor: const Color(0xff693b58),
           foregroundColor: Colors.white,
           title: const Text('Product Catalogue'),
         ),
@@ -161,7 +161,7 @@ class ProductState extends State<Product> {
           },
         ),
         floatingActionButton: FloatingActionButton(
-          backgroundColor: const Color(0xff03dac6),
+          backgroundColor: const Color(0xff997ABD),
           foregroundColor: Colors.black,
           onPressed: () {
             //==========Add Item Form begins=========//

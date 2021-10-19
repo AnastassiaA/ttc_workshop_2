@@ -20,7 +20,7 @@ class ExpenseState extends State<ExpenseHome> {
       child: Scaffold(
         backgroundColor: const Color(0xffE9DCE5),
         appBar: AppBar(
-          backgroundColor: const Color(0xff2C041C),
+          backgroundColor: const Color(0xff693b58),
           foregroundColor: Colors.white,
           title: const Text('Expenses'),
         ),

@@ -1,11 +1,22 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:ttc_workshop_2/db_code/crochetthread_db.dart';
 
 import 'drawer.dart';
-import 'order.dart';
+import 'package:ttc_workshop_2/models/crochetthread_model.dart';
+
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io' as io;
 
 class ThreadHook extends StatelessWidget {
-  final items = List<String>.generate(20, (i) => "Item $i");
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -15,25 +26,46 @@ class ThreadHook extends StatelessWidget {
         child: Scaffold(
           backgroundColor: const Color(0xffE9DCE5),
           appBar: AppBar(
-            backgroundColor: const Color(0xff540E32),
+            backgroundColor: const Color(0xff693b58),
             foregroundColor: Colors.white,
             title: const Text('Yarns, Hooks, etc.'),
             bottom: TabBar(
               isScrollable: true,
               tabs: [
+                Tab(text: 'Crochet Thread'),
+                Tab(text: 'Yarn'),
                 Tab(text: 'Crochet Hooks'),
                 Tab(text: 'Knitting Needles'),
-                Tab(text: 'Yarn'),
-                Tab(text: 'Crochet Thread'),
               ],
             ),
           ),
           body: TabBarView(children: [
-            ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('${items[index]}'),
+            FutureBuilder(
+              future: CrochetThreadDatabase.ensureInitialized().crochetThread(),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      CrochetThreadModel _model = snapshot.data[index];
+                      return ListTile(
+                        title: Card(
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(snapshot.data[index].text),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return Center(
+                  child: Text('No Crochet Thread added'),
                 );
               },
             ),
@@ -42,16 +74,362 @@ class ThreadHook extends StatelessWidget {
             Icon(Icons.directions_bike),
           ]),
           drawer: MyDrawer(),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: const Color(0xff997ABD),
-            foregroundColor: Colors.black,
-            onPressed: () {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(builder: (context) => AddOrder()),
-              // );
-            },
-            child: Icon(Icons.add),
+          floatingActionButton: SpeedDial(
+            //Speed dial menu
+            icon: Icons.menu, //icon on Floating action button
+            activeIcon: Icons.close, //icon when menu is expanded on button
+            backgroundColor:
+                const Color(0xff997ABD), //background color of button
+            foregroundColor: Colors.black, //font color, icon color in button
+            activeBackgroundColor: const Color(
+                0xff997ABD), //background color when menu is expanded
+            activeForegroundColor: Colors.black12,
+            buttonSize: 56.0, //button size
+            visible: true,
+            closeManually: false,
+            curve: Curves.bounceIn,
+            elevation: 8.0, //shadow elevation of button
+            shape: CircleBorder(), //shape of button
+
+            children: [
+              SpeedDialChild(
+                //speed dial child
+                child: Icon(Icons.add),
+                backgroundColor: const Color(0xff540E32),
+                foregroundColor: Colors.white,
+                label: 'Add Yarn',
+                labelStyle: TextStyle(fontSize: 18.0),
+              ),
+              SpeedDialChild(
+                child: Icon(Icons.add),
+                backgroundColor: const Color(0xff540E32),
+                foregroundColor: Colors.white,
+                label: 'Add Crochet Thread',
+                labelStyle: TextStyle(fontSize: 18.0),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AddCrochetThread()),
+                  );
+                },
+              ),
+              SpeedDialChild(
+                child: Icon(Icons.add),
+                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xff540E32),
+                label: 'Add Crochet Hook',
+                labelStyle: TextStyle(fontSize: 18.0),
+              ),
+              SpeedDialChild(
+                child: Icon(Icons.add),
+                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xff540E32),
+                label: 'Add Knitting Needle',
+                labelStyle: TextStyle(fontSize: 18.0),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class AddCrochetThread extends StatefulWidget {
+  @override
+  _AddCrochetThreadState createState() => _AddCrochetThreadState();
+}
+
+class _AddCrochetThreadState extends State<AddCrochetThread> {
+  late CrochetThreadDatabase crochetThreadManager;
+
+  final _formKey = GlobalKey<FormState>();
+
+  String dropdownValue = 'None';
+
+  final threadNumberController = TextEditingController();
+
+  final threadColorController = TextEditingController();
+
+  final brandController = TextEditingController();
+
+  final materialController = TextEditingController();
+
+  final sizeController = TextEditingController();
+
+  final availableWeightController = TextEditingController();
+
+  final priceController = TextEditingController();
+
+  final weightController = TextEditingController();
+
+  final hooknNeedleController = TextEditingController();
+
+  final costController = TextEditingController();
+
+  TextEditingController _controller = TextEditingController();
+
+  bool _loadingPath = false;
+  String? _directoryPath;
+  List<PlatformFile>? _paths;
+  String? _extension;
+  String? _fileName;
+  FilePickerResult? pickedFile;
+  int index = 0;
+  late final path;
+
+  String _generateThreadNumber(String threadColor) {
+    Random random = new Random();
+    int number = random.nextInt(10);
+
+    String color = threadColor.substring(0, 3).toUpperCase();
+
+    String threadNumber = color + number.toString().padLeft(4, '0');
+    return threadNumber;
+  }
+
+  void dispose() {
+    super.dispose();
+
+    threadNumberController.dispose();
+
+    threadColorController.dispose();
+
+    brandController.dispose();
+
+    materialController.dispose();
+
+    sizeController.dispose();
+
+    availableWeightController.dispose();
+
+    priceController.dispose();
+
+    weightController.dispose();
+
+    hooknNeedleController.dispose();
+
+    costController.dispose();
+  }
+
+  void _openFileExplorer() async {
+    setState(() => _loadingPath = true);
+    try {
+      _directoryPath = null;
+      _paths = (await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        onFileLoading: (FilePickerStatus status) => print(status),
+        allowedExtensions: (_extension?.isNotEmpty ?? false)
+            ? _extension?.replaceAll(' ', '').split(',')
+            : null,
+      ))
+          ?.files;
+
+      // String img = _paths!.first.path.toString();
+    } on PlatformException catch (e) {
+      print("Unsupported operation" + e.toString());
+    } catch (ex) {
+      print(ex);
+    }
+    if (!mounted) return;
+    setState(() {
+      _loadingPath = false;
+      _fileName =
+          _paths != null ? _paths!.map((e) => e.name).toString() : '...';
+    });
+  }
+
+  Widget printText() {
+    if (_fileName == null) {
+      return Text('');
+    } else {
+      return Text('$_fileName');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xffE9DCE5),
+        appBar: AppBar(
+          backgroundColor: const Color(0xff693b58),
+          title: Text('Add Crochet Thread'),
+        ),
+        body: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  TextField(
+                    controller: threadNumberController,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Thread Number',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: threadColorController,
+                    keyboardType: TextInputType.text,
+                    onChanged: (text) {
+                      threadNumberController.text = _generateThreadNumber(text);
+                    },
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Thread Color',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter thread color';
+                      }
+                      return null;
+                    },
+                  ),
+                  Container(
+                    child: printText(),
+                    // Image.file(
+                    //     io.File(
+                    //       _paths!.first.path.toString(),
+                    //     ),
+                    //     width: 100,
+                    //     height: 100,
+                    //     fit: BoxFit.fill)
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      onTap: () {
+                        _openFileExplorer();
+                        path = _paths!
+                            .map((e) => e.path)
+                            .toList()[index]
+                            .toString();
+                      },
+                      child: Card(
+                        color: const Color(0xffE9DCE5),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Icon(
+                                Icons.camera_alt,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.image),
+                            ),
+                            Text('IMAGE', textAlign: TextAlign.right),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    controller: brandController,
+                    keyboardType: TextInputType.text,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Brand',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: materialController,
+                    keyboardType: TextInputType.text,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Material',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: sizeController,
+                    keyboardType: TextInputType.text,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Size',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: availableWeightController,
+                    keyboardType: TextInputType.number,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Available Weight',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: priceController,
+                    keyboardType: TextInputType.number,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Price per gram',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: weightController,
+                    keyboardType: TextInputType.number,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Weight',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: hooknNeedleController,
+                    keyboardType: TextInputType.text,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Recc Hook/Needle',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: costController,
+                    keyboardType: TextInputType.number,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Cost',
+                    ),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Color(0xff997ABD))),
+                        child: const Text('Add Thread'),
+                        //style: ,
+                        onPressed: () async {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Saving crochet thread')));
+
+                          await crochetThreadManager.insertCrochetThread(
+                            CrochetThreadModel(
+                              threadNumber: threadNumberController.text,
+                              threadColor: threadColorController.text,
+                              image: path,
+                              brand: brandController.text,
+                              material: materialController.text,
+                              size: sizeController.text,
+                              availableWeight:
+                                  double.parse(availableWeightController.text),
+                              pricePerGram: double.parse(priceController.text),
+                              weight: double.parse(weightController.text),
+                              reccHookNeedle: hooknNeedleController.text,
+                              cost: double.parse(costController.text),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),

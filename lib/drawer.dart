@@ -28,7 +28,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text('Home'),
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {
               Navigator.push(
                 context,
@@ -38,7 +38,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text('Timer'),
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {
               // Navigator.push(
               //   context,
@@ -48,7 +48,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text('Orders'),
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {
               Navigator.push(
                 context,
@@ -58,7 +58,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text('Yarns, Hooks, etc.'),
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {
               Navigator.push(
                 context,
@@ -68,13 +68,13 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text('Tools List'),
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {},
           ),
           ListTile(
             title: Text('Financials'),
             //Expense, Revenue, all the fancy stuff
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {
               Navigator.push(
                 context,
@@ -84,7 +84,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text('Product Catalogue'),
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {
               Navigator.push(
                 context,
@@ -94,7 +94,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             title: Text('Hand Exercises'),
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {
               Navigator.push(
                 context,
@@ -105,13 +105,13 @@ class MyDrawer extends StatelessWidget {
           ListTile(
             title: Text('Social Media'),
             //Instagram and Facebook
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {},
           ),
           ListTile(
             title: Text('Misc Info'),
             //Brands, Sellers
-            tileColor: const Color(0xff997ABD),
+            tileColor: const Color(0xffE9DCE5),
             onTap: () {
               Navigator.push(
                 context,

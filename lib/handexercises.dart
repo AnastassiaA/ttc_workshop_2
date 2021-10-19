@@ -8,7 +8,7 @@ class HandExercise extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xffE9DCE5),
         appBar: AppBar(
-          backgroundColor: const Color(0xff4D0F28),
+          backgroundColor: const Color(0xff693b58),
           foregroundColor: Colors.white,
           title: const Text('Hand Exercises'),
         ),

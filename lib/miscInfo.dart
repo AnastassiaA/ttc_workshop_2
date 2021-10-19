@@ -11,7 +11,7 @@ class MiscInfo extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xffE9DCE5),
         appBar: AppBar(
-          backgroundColor: const Color(0xff78184A),
+          backgroundColor: const Color(0xff693b58),
           foregroundColor: Colors.white,
           title: const Text('Misc Info'),
         ),

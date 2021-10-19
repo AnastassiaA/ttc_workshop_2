@@ -20,7 +20,7 @@ class OrderHome extends StatelessWidget {
       child: Scaffold(
         backgroundColor: const Color(0xffE9DCE5),
         appBar: AppBar(
-          backgroundColor: const Color(0xff720058),
+          backgroundColor: const Color(0xff693b58),
           foregroundColor: Colors.white,
           title: const Text('Orders'),
         ),

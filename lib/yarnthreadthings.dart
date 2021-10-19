@@ -2,14 +2,21 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:ttc_workshop_2/db_code/crochetthread_db.dart';
 
 import 'drawer.dart';
+import 'package:ttc_workshop_2/models/crochetthread_model.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
+import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io' as io;
 
 class ThreadHook extends StatelessWidget {
-  final items = List<String>.generate(20, (i) => "Item $i");
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -19,7 +26,7 @@ class ThreadHook extends StatelessWidget {
         child: Scaffold(
           backgroundColor: const Color(0xffE9DCE5),
           appBar: AppBar(
-            backgroundColor: const Color(0xff540E32),
+            backgroundColor: const Color(0xff693b58),
             foregroundColor: Colors.white,
             title: const Text('Yarns, Hooks, etc.'),
             bottom: TabBar(
@@ -33,11 +40,32 @@ class ThreadHook extends StatelessWidget {
             ),
           ),
           body: TabBarView(children: [
-            ListView.builder(
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('${items[index]}'),
+            FutureBuilder(
+              future: CrochetThreadDatabase.ensureInitialized().crochetThread(),
+              builder: (context, AsyncSnapshot snapshot) {
+                if (snapshot.hasData) {
+                  return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      CrochetThreadModel _model = snapshot.data[index];
+                      return ListTile(
+                        title: Card(
+                          child: Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(snapshot.data[index].text),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+                return Center(
+                  child: Text('No Crochet Thread added'),
                 );
               },
             ),
@@ -107,53 +135,48 @@ class ThreadHook extends StatelessWidget {
   }
 }
 
-class AddCrochetThread extends StatelessWidget {
+class AddCrochetThread extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: const Color(0xffE9DCE5),
-        appBar: AppBar(
-          backgroundColor: const Color(0xff540E32),
-          title: Text('Add Crochet Thread'),
-        ),
-        body: AddCrochetThreadForm(),
-      ),
-    );
-  }
+  _AddCrochetThreadState createState() => _AddCrochetThreadState();
 }
 
-class AddCrochetThreadForm extends StatefulWidget {
-  @override
-  _AddCrochetThreadState createState() {
-    return _AddCrochetThreadState();
-  }
-}
+class _AddCrochetThreadState extends State<AddCrochetThread> {
+  late CrochetThreadDatabase crochetThreadManager;
 
-class _AddCrochetThreadState extends State<AddCrochetThreadForm> {
-  String _threadNumber = '';
-  String _threadColor = '';
-  String _image = '';
-  String _brand = '';
-  String _material = '';
-  String _size = '';
-  double _availableWeight = 0.0;
-  double _pricePerGram = 0.0;
-  String _weight = '';
-  String _reccHookNeedle = '';
-  double _cost = 0.0;
   final _formKey = GlobalKey<FormState>();
+
   String dropdownValue = 'None';
-  final brandName = TextEditingController();
-  List<String> dropdownList = ['None', "Auntie Lydia's"];
-  final _threadNumberController = TextEditingController();
 
-  @override
-  void threadDispose() {
-    _threadNumberController.dispose();
+  final threadNumberController = TextEditingController();
 
-    super.dispose();
-  }
+  final threadColorController = TextEditingController();
+
+  final brandController = TextEditingController();
+
+  final materialController = TextEditingController();
+
+  final sizeController = TextEditingController();
+
+  final availableWeightController = TextEditingController();
+
+  final priceController = TextEditingController();
+
+  final weightController = TextEditingController();
+
+  final hooknNeedleController = TextEditingController();
+
+  final costController = TextEditingController();
+
+  TextEditingController _controller = TextEditingController();
+
+  bool _loadingPath = false;
+  String? _directoryPath;
+  List<PlatformFile>? _paths;
+  String? _extension;
+  String? _fileName;
+  FilePickerResult? pickedFile;
+  int index = 0;
+  late final path;
 
   String _generateThreadNumber(String threadColor) {
     Random random = new Random();
@@ -165,269 +188,251 @@ class _AddCrochetThreadState extends State<AddCrochetThreadForm> {
     return threadNumber;
   }
 
-  @override
-  void brandDispose() {
-    // Clean up the controller when the widget is disposed.
-    brandName.dispose();
+  void dispose() {
     super.dispose();
+
+    threadNumberController.dispose();
+
+    threadColorController.dispose();
+
+    brandController.dispose();
+
+    materialController.dispose();
+
+    sizeController.dispose();
+
+    availableWeightController.dispose();
+
+    priceController.dispose();
+
+    weightController.dispose();
+
+    hooknNeedleController.dispose();
+
+    costController.dispose();
+  }
+
+  void _openFileExplorer() async {
+    setState(() => _loadingPath = true);
+    try {
+      _directoryPath = null;
+      _paths = (await FilePicker.platform.pickFiles(
+        type: FileType.image,
+        onFileLoading: (FilePickerStatus status) => print(status),
+        allowedExtensions: (_extension?.isNotEmpty ?? false)
+            ? _extension?.replaceAll(' ', '').split(',')
+            : null,
+      ))
+          ?.files;
+
+      // String img = _paths!.first.path.toString();
+    } on PlatformException catch (e) {
+      print("Unsupported operation" + e.toString());
+    } catch (ex) {
+      print(ex);
+    }
+    if (!mounted) return;
+    setState(() {
+      _loadingPath = false;
+      _fileName =
+          _paths != null ? _paths!.map((e) => e.name).toString() : '...';
+    });
+  }
+
+  Widget printText() {
+    if (_fileName == null) {
+      return Text('');
+    } else {
+      return Text('$_fileName');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              TextField(
-                controller: _threadNumberController,
-                showCursor: true,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Thread Number',
-                ),
-                readOnly: true,
-              ),
-              TextFormField(
-                onChanged: (text) {
-                  _threadNumberController.text = _generateThreadNumber(text);
-                },
-                showCursor: true,
-                decoration: const InputDecoration(
-                  labelText: 'Thread Color',
-                ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Please enter thread color';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                showCursor: true,
-                decoration: const InputDecoration(
-                  labelText: 'Image',
-                ),
-              ),
-              Row(
-                children: [
-                  Text('Brand'),
-                  Container(
-                    padding: EdgeInsets.only(left: 20.0),
-                    child: DropdownButton<String>(
-                      value: dropdownValue,
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          dropdownValue = newValue!;
-                        });
-                      },
-                      items: dropdownList
-                          .map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xffE9DCE5),
+        appBar: AppBar(
+          backgroundColor: const Color(0xff693b58),
+          title: Text('Add Crochet Thread'),
+        ),
+        body: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  TextField(
+                    controller: threadNumberController,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Thread Number',
                     ),
                   ),
-                  IconButton(
-                      onPressed: () {
-                        Alert(
-                            context: context,
-                            title: "Add brand",
-                            content: Column(
-                              children: <Widget>[
-                                Container(
-                                  child: TextField(
-                                    controller: brandName,
-                                    obscureText: true,
-                                    decoration: InputDecoration(
-                                      labelText: 'Brand',
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            buttons: [
-                              DialogButton(
-                                onPressed: () {
-                                  setState(() {
-                                    dropdownList.add(brandName.text);
-                                  });
-                                },
-                                child: Text(
-                                  "Add",
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 20),
-                                ),
-                              )
-                            ]).show();
+                  TextFormField(
+                    controller: threadColorController,
+                    keyboardType: TextInputType.text,
+                    onChanged: (text) {
+                      threadNumberController.text = _generateThreadNumber(text);
+                    },
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Thread Color',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return 'Please enter thread color';
+                      }
+                      return null;
+                    },
+                  ),
+                  Container(
+                    child: printText(),
+                    // Image.file(
+                    //     io.File(
+                    //       _paths!.first.path.toString(),
+                    //     ),
+                    //     width: 100,
+                    //     height: 100,
+                    //     fit: BoxFit.fill)
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      onTap: () {
+                        _openFileExplorer();
+                        path = _paths!
+                            .map((e) => e.path)
+                            .toList()[index]
+                            .toString();
                       },
-                      icon: Icon(Icons.add)), //add a new brand
+                      child: Card(
+                        color: const Color(0xffE9DCE5),
+                        child: Row(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: Icon(
+                                Icons.camera_alt,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Icon(Icons.image),
+                            ),
+                            Text('IMAGE', textAlign: TextAlign.right),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  TextFormField(
+                    controller: brandController,
+                    keyboardType: TextInputType.text,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Brand',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: materialController,
+                    keyboardType: TextInputType.text,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Material',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: sizeController,
+                    keyboardType: TextInputType.text,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Size',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: availableWeightController,
+                    keyboardType: TextInputType.number,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Available Weight',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: priceController,
+                    keyboardType: TextInputType.number,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Price per gram',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: weightController,
+                    keyboardType: TextInputType.number,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Weight',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: hooknNeedleController,
+                    keyboardType: TextInputType.text,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Recc Hook/Needle',
+                    ),
+                  ),
+                  TextFormField(
+                    controller: costController,
+                    keyboardType: TextInputType.number,
+                    showCursor: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Cost',
+                    ),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Color(0xff997ABD))),
+                        child: const Text('Add Thread'),
+                        //style: ,
+                        onPressed: () async {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Saving crochet thread')));
+
+                          await crochetThreadManager.insertCrochetThread(
+                            CrochetThreadModel(
+                              threadNumber: threadNumberController.text,
+                              threadColor: threadColorController.text,
+                              image: path,
+                              brand: brandController.text,
+                              material: materialController.text,
+                              size: sizeController.text,
+                              availableWeight:
+                                  double.parse(availableWeightController.text),
+                              pricePerGram: double.parse(priceController.text),
+                              weight: double.parse(weightController.text),
+                              reccHookNeedle: hooknNeedleController.text,
+                              cost: double.parse(costController.text),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
                 ],
               ),
-              TextFormField(
-                showCursor: true,
-                decoration: const InputDecoration(
-                  labelText: 'Material',
-                ),
-              ),
-              TextFormField(
-                showCursor: true,
-                decoration: const InputDecoration(
-                  labelText: 'Size',
-                ),
-              ),
-              TextFormField(
-                showCursor: true,
-                decoration: const InputDecoration(
-                  labelText: 'Available Weight',
-                ),
-              ),
-              TextFormField(
-                showCursor: true,
-                decoration: const InputDecoration(
-                  labelText: 'Price per gram',
-                ),
-              ),
-              TextFormField(
-                showCursor: true,
-                decoration: const InputDecoration(
-                  labelText: 'Weight',
-                ),
-              ),
-              TextFormField(
-                showCursor: true,
-                decoration: const InputDecoration(
-                  labelText: 'Recc Hook/Needle',
-                ),
-              ),
-              TextFormField(
-                showCursor: true,
-                decoration: const InputDecoration(
-                  labelText: 'Cost',
-                ),
-              ),
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: ElevatedButton(
-                    child: const Text('Add Thread'),
-                    onPressed: null,
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),
     );
   }
 }
-
-//================================//
-//My Attempt at reverse engineering
-//=========//
-// class StackedFAB extends StatefulWidget {
-//   const StackedFAB({
-//     Key? key,
-//     this.initialOpen,
-//     required this.children,
-//   });
-//
-//   final bool? initialOpen;
-//   final List<Widget> children;
-//
-//   @override
-//   _StackedFABState createState() {
-//     return _StackedFABState();
-//   }
-// }
-//
-// class _StackedFABState extends State<StackedFAB>
-//     with SingleTickerProviderStateMixin {
-//   late final AnimationController _controller;
-//   late final Animation<double> _expandAnimation;
-//   bool _open = false;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _open = widget.initialOpen ?? false;
-//     _controller = AnimationController(
-//       value: _open ? 1.0 : 0.0,
-//       duration: const Duration(milliseconds: 250),
-//       vsync: this,
-//     );
-//     _expandAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
-//   }
-//
-//   @override
-//   void dispose() {
-//     _controller.dispose();
-//     super.dispose();
-//   }
-//
-//   void _toggle() {
-//     setState(() {
-//       _open = !_open;
-//       if (_open) {
-//         _controller.forward();
-//       } else {
-//         _controller.reverse();
-//       }
-//     });
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return SizedBox.expand(
-//       child: Stack(
-//         alignment: Alignment.bottomRight,
-//         clipBehavior: Clip.none,
-//         children: [
-//           _buildTapToCloseStackedFab(),
-//           ..._buildExpandingActionButtons(),
-//           _buildTapToOpenFab(),
-//         ],
-//       ),
-//     );
-//   }
-//
-//   Widget _buildTapToCloseStackedFab() {
-//     return SizedBox(
-//       width: 56.0,
-//       height: 56.0,
-//       child: Center(
-//         child: Material(
-//           shape: const CircleBorder(),
-//           clipBehavior: Clip.antiAlias,
-//           elevation: 4.0,
-//           child: InkWell(
-//             onTap: _toggle,
-//             child: Padding(
-//               padding: const EdgeInsets.all(8.0),
-//               child: Icon(
-//                 Icons.close,
-//               ),
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-//
-//   List<Widget> _buildExpandingActionButtons() {
-//     final children = <Widget>[];
-//     final count = widget.children.length;
-//
-//     for (var i = 0; i < count; i++) {
-//       children.add(_StackedFAB);
-//     }
-//     return children;
-//   }
-// }
-//=========================================//

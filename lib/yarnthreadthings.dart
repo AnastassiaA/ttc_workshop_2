@@ -9,12 +9,7 @@ import 'drawer.dart';
 import 'package:ttc_workshop_2/models/crochetthread_model.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:rflutter_alert/rflutter_alert.dart';
-import 'package:provider/provider.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import 'package:file_picker/file_picker.dart';
-import 'dart:io' as io;
 
 class ThreadHook extends StatelessWidget {
   @override
@@ -40,29 +35,38 @@ class ThreadHook extends StatelessWidget {
             ),
           ),
           body: TabBarView(children: [
+            //print(CrochetThreadDatabase.ensureInitialized().crochetThread());
             FutureBuilder(
-              future: CrochetThreadDatabase.ensureInitialized().crochetThread(),
-              builder: (context, AsyncSnapshot snapshot) {
+              future: CrochetThreadDatabaseHelper.instance.getCrochetThread(),
+              builder:
+                  (context, AsyncSnapshot<List<CrochetThreadModel>> snapshot) {
                 if (snapshot.hasData) {
-                  return ListView.builder(
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {
-                      CrochetThreadModel _model = snapshot.data[index];
-                      return ListTile(
-                        title: Card(
-                          child: Padding(
-                            padding: EdgeInsets.all(8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(snapshot.data[index].text),
-                              ],
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+                  return ListView(
+                    children: snapshot.data!.map((crochetthread) {
+                      return Center(
+                          child:
+                              ListTile(title: Text(crochetthread.threadColor)));
+                    }).toList(),
                   );
+                  // return ListView.builder(
+                  //   itemCount: snapshot.data.length,
+                  //   itemBuilder: (context, index) {
+                  //     CrochetThreadModel _model = snapshot.data[index];
+                  //     return ListTile(
+                  //       title: Card(
+                  //         child: Padding(
+                  //           padding: EdgeInsets.all(8),
+                  //           child: Row(
+                  //             mainAxisAlignment: MainAxisAlignment.center,
+                  //             children: [
+                  //               Text(snapshot.data[index].text),
+                  //             ],
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     );
+                  //   },
+                  // );
                 }
                 return Center(
                   child: Text('No Crochet Thread added'),
@@ -141,8 +145,6 @@ class AddCrochetThread extends StatefulWidget {
 }
 
 class _AddCrochetThreadState extends State<AddCrochetThread> {
-  late CrochetThreadDatabase crochetThreadManager;
-
   final _formKey = GlobalKey<FormState>();
 
   String dropdownValue = 'None';
@@ -358,7 +360,7 @@ class _AddCrochetThreadState extends State<AddCrochetThread> {
                     keyboardType: TextInputType.number,
                     showCursor: true,
                     decoration: const InputDecoration(
-                      labelText: 'Available Weight',
+                      labelText: 'Available Weight (g)',
                     ),
                   ),
                   TextFormField(
@@ -407,7 +409,8 @@ class _AddCrochetThreadState extends State<AddCrochetThread> {
                               const SnackBar(
                                   content: Text('Saving crochet thread')));
 
-                          await crochetThreadManager.insertCrochetThread(
+                          await CrochetThreadDatabaseHelper.instance
+                              .addCrochetThread(
                             CrochetThreadModel(
                               threadNumber: threadNumberController.text,
                               threadColor: threadColorController.text,
@@ -423,6 +426,22 @@ class _AddCrochetThreadState extends State<AddCrochetThread> {
                               cost: double.parse(costController.text),
                             ),
                           );
+
+                          // setState(() {
+                          //   threadNumberController.clear();
+                          //   threadColorController.clear();
+                          //   path.clear();
+                          //   brandController.clear();
+                          //   materialController.clear();
+                          //   sizeController.clear();
+                          //   availableWeightController.clear();
+                          //   priceController.clear();
+                          //   weightController.clear();
+                          //   hooknNeedleController.clear();
+                          //   costController.clear();
+                          // });
+
+                          Navigator.pop(context);
                         },
                       ),
                     ),

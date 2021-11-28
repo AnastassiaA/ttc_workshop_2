@@ -7,9 +7,9 @@ import 'package:ttc_workshop_2/order.dart';
 import 'package:ttc_workshop_2/tool.dart';
 import 'package:ttc_workshop_2/handexercises.dart';
 import 'package:ttc_workshop_2/timer.dart';
-import 'package:ttc_workshop_2/expenses.dart';
 import 'package:ttc_workshop_2/yarnthreadthings.dart';
 
+import 'accounting_dashboard.dart';
 import 'home page.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -72,13 +72,13 @@ class MyDrawer extends StatelessWidget {
             onTap: () {},
           ),
           ListTile(
-            title: Text('Financials'),
+            title: Text('Accounting'),
             //Expense, Revenue, all the fancy stuff
             tileColor: const Color(0xffE9DCE5),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ExpenseHome()),
+                MaterialPageRoute(builder: (context) => AccountingDashboard()),
               );
             },
           ),

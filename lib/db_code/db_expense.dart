@@ -4,7 +4,7 @@ import 'package:flutter/widgets.dart';
 
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:ttc_workshop_2/models/model_expense.dart';
+import 'package:ttc_workshop_2/models/expense_model.dart';
 
 class ExpenseDatabase {
   static final ExpenseDatabase instance = ExpenseDatabase._init();

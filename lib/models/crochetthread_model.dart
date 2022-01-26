@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:sqflite/sql.dart';
 
 class CrochetThreadModel {
-  final String threadNumber;
+  //final String? threadNumber;
   final String threadColor;
-  final String image;
+  //final String image;
   final String brand;
   final String material;
   final String size;
@@ -18,9 +17,9 @@ class CrochetThreadModel {
   final double cost;
 
   CrochetThreadModel(
-      {required this.threadNumber,
+      { //required this.threadNumber,
       required this.threadColor,
-      required this.image,
+      //required this.image,
       required this.brand,
       required this.material,
       required this.size,
@@ -32,9 +31,9 @@ class CrochetThreadModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'threadnumber': threadNumber,
+      //'threadnumber': threadNumber,
       'threadcolor': threadColor,
-      'image': image,
+      //'image': image,
       'brand': brand,
       'material': material,
       'size': size,
@@ -46,10 +45,20 @@ class CrochetThreadModel {
     };
   }
 
-  @override
-  String toString() {
-    return 'CrochetThreadModel{threadnumber: $threadNumber, threadcolor: $threadColor, image: $image, brand: $brand, material: $material, size: $size, availableweight: $availableWeight, pricepergram: $pricePerGram, weight: $weight, recchookneedle: $reccHookNeedle, cost: $cost,}';
-  } //toString
+  factory CrochetThreadModel.fromMap(Map<String, dynamic> json) =>
+      new CrochetThreadModel(
+        //threadNumber: json['threadnumber'],
+        threadColor: json['threadcolor'],
+        //image: json['image'],
+        brand: json['brand'],
+        material: json['material'],
+        size: json['size'],
+        availableWeight: json['availableweight'],
+        pricePerGram: json['pricepergram'],
+        weight: json['weight'],
+        reccHookNeedle: json['recchookneedle'],
+        cost: json['cost'],
+      );
 }
 
 class Utility {

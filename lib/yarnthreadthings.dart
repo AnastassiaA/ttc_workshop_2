@@ -1,15 +1,16 @@
 import 'dart:math';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ttc_workshop_2/db_code/crochetthread_db.dart';
 
+import 'package:ttc_workshop_2/db_code/crochetthread_db.dart';
 import 'drawer.dart';
 import 'package:ttc_workshop_2/models/crochetthread_model.dart';
+import 'crochetthread_tab.dart';
 
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:provider/provider.dart';
 
 class ThreadHook extends StatelessWidget {
   @override
@@ -18,124 +19,105 @@ class ThreadHook extends StatelessWidget {
       child: DefaultTabController(
         initialIndex: 0,
         length: 4,
-        child: Scaffold(
-          backgroundColor: const Color(0xffE9DCE5),
-          appBar: AppBar(
-            backgroundColor: const Color(0xff693b58),
-            foregroundColor: Colors.white,
-            title: const Text('Yarns, Hooks, etc.'),
-            bottom: TabBar(
-              isScrollable: true,
-              tabs: [
-                Tab(text: 'Crochet Thread'),
-                Tab(text: 'Yarn'),
-                Tab(text: 'Crochet Hooks'),
-                Tab(text: 'Knitting Needles'),
+        child: ChangeNotifierProvider(
+          create: (BuildContext context) => CrochetThreadTab(),
+          child: Scaffold(
+            backgroundColor: const Color(0xffE9DCE5),
+            appBar: AppBar(
+              backgroundColor: const Color(0xff693b58),
+              foregroundColor: Colors.white,
+              title: const Text('Yarns, Hooks, etc.'),
+              bottom: TabBar(
+                isScrollable: true,
+                tabs: [
+                  Tab(text: 'Crochet Thread'),
+                  Tab(text: 'Yarn'),
+                  Tab(text: 'Crochet Hooks'),
+                  Tab(text: 'Knitting Needles'),
+                ],
+              ),
+            ),
+            body: ThreadsTabBar(),
+            drawer: MyDrawer(),
+            floatingActionButton: SpeedDial(
+              //Speed dial menu
+              icon: Icons.menu, //icon on Floating action button
+              activeIcon: Icons.close, //icon when menu is expanded on button
+              backgroundColor:
+                  const Color(0xff997ABD), //background color of button
+              foregroundColor: Colors.black, //font color, icon color in button
+              activeBackgroundColor: const Color(
+                  0xff997ABD), //background color when menu is expanded
+              activeForegroundColor: Colors.black12,
+              buttonSize: 56.0, //button size
+              visible: true,
+              closeManually: false,
+              curve: Curves.bounceIn,
+              elevation: 8.0, //shadow elevation of button
+              shape: CircleBorder(), //shape of button
+
+              children: [
+                SpeedDialChild(
+                  //speed dial child
+                  child: Icon(Icons.add),
+                  backgroundColor: const Color(0xff540E32),
+                  foregroundColor: Colors.white,
+                  label: 'Add Yarn',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                ),
+                SpeedDialChild(
+                  child: Icon(Icons.add),
+                  backgroundColor: const Color(0xff540E32),
+                  foregroundColor: Colors.white,
+                  label: 'Add Crochet Thread',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AddCrochetThread()),
+                    );
+                  },
+                ),
+                SpeedDialChild(
+                  child: Icon(Icons.add),
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xff540E32),
+                  label: 'Add Crochet Hook',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                ),
+                SpeedDialChild(
+                  child: Icon(Icons.add),
+                  foregroundColor: Colors.white,
+                  backgroundColor: const Color(0xff540E32),
+                  label: 'Add Knitting Needle',
+                  labelStyle: TextStyle(fontSize: 18.0),
+                ),
               ],
             ),
-          ),
-          body: TabBarView(children: [
-            //print(CrochetThreadDatabase.ensureInitialized().crochetThread());
-            FutureBuilder(
-              future: CrochetThreadDatabaseHelper.instance.getCrochetThread(),
-              builder:
-                  (context, AsyncSnapshot<List<CrochetThreadModel>> snapshot) {
-                if (snapshot.hasData) {
-                  return ListView(
-                    children: snapshot.data!.map((crochetthread) {
-                      return Center(
-                          child:
-                              ListTile(title: Text(crochetthread.threadColor)));
-                    }).toList(),
-                  );
-                  // return ListView.builder(
-                  //   itemCount: snapshot.data.length,
-                  //   itemBuilder: (context, index) {
-                  //     CrochetThreadModel _model = snapshot.data[index];
-                  //     return ListTile(
-                  //       title: Card(
-                  //         child: Padding(
-                  //           padding: EdgeInsets.all(8),
-                  //           child: Row(
-                  //             mainAxisAlignment: MainAxisAlignment.center,
-                  //             children: [
-                  //               Text(snapshot.data[index].text),
-                  //             ],
-                  //           ),
-                  //         ),
-                  //       ),
-                  //     );
-                  //   },
-                  // );
-                }
-                return Center(
-                  child: Text('No Crochet Thread added'),
-                );
-              },
-            ),
-            Icon(Icons.directions_transit),
-            Icon(Icons.directions_bike),
-            Icon(Icons.directions_bike),
-          ]),
-          drawer: MyDrawer(),
-          floatingActionButton: SpeedDial(
-            //Speed dial menu
-            icon: Icons.menu, //icon on Floating action button
-            activeIcon: Icons.close, //icon when menu is expanded on button
-            backgroundColor:
-                const Color(0xff997ABD), //background color of button
-            foregroundColor: Colors.black, //font color, icon color in button
-            activeBackgroundColor: const Color(
-                0xff997ABD), //background color when menu is expanded
-            activeForegroundColor: Colors.black12,
-            buttonSize: 56.0, //button size
-            visible: true,
-            closeManually: false,
-            curve: Curves.bounceIn,
-            elevation: 8.0, //shadow elevation of button
-            shape: CircleBorder(), //shape of button
-
-            children: [
-              SpeedDialChild(
-                //speed dial child
-                child: Icon(Icons.add),
-                backgroundColor: const Color(0xff540E32),
-                foregroundColor: Colors.white,
-                label: 'Add Yarn',
-                labelStyle: TextStyle(fontSize: 18.0),
-              ),
-              SpeedDialChild(
-                child: Icon(Icons.add),
-                backgroundColor: const Color(0xff540E32),
-                foregroundColor: Colors.white,
-                label: 'Add Crochet Thread',
-                labelStyle: TextStyle(fontSize: 18.0),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AddCrochetThread()),
-                  );
-                },
-              ),
-              SpeedDialChild(
-                child: Icon(Icons.add),
-                foregroundColor: Colors.white,
-                backgroundColor: const Color(0xff540E32),
-                label: 'Add Crochet Hook',
-                labelStyle: TextStyle(fontSize: 18.0),
-              ),
-              SpeedDialChild(
-                child: Icon(Icons.add),
-                foregroundColor: Colors.white,
-                backgroundColor: const Color(0xff540E32),
-                label: 'Add Knitting Needle',
-                labelStyle: TextStyle(fontSize: 18.0),
-              ),
-            ],
           ),
         ),
       ),
     );
+  }
+}
+
+class ThreadsTabBar extends StatefulWidget with ChangeNotifier {
+  @override
+  _ThreadsTabBarState createState() {
+    return _ThreadsTabBarState();
+  }
+}
+
+class _ThreadsTabBarState extends State<ThreadsTabBar> {
+  @override
+  Widget build(BuildContext context) {
+    return TabBarView(children: [
+      CrochetThreadTab(),
+      Icon(Icons.directions_transit),
+      Icon(Icons.directions_bike),
+      Icon(Icons.directions_bike),
+    ]);
   }
 }
 
@@ -149,7 +131,7 @@ class _AddCrochetThreadState extends State<AddCrochetThread> {
 
   String dropdownValue = 'None';
 
-  final threadNumberController = TextEditingController();
+  //final threadNumberController = TextEditingController();
 
   final threadColorController = TextEditingController();
 
@@ -180,20 +162,20 @@ class _AddCrochetThreadState extends State<AddCrochetThread> {
   int index = 0;
   late final path;
 
-  String _generateThreadNumber(String threadColor) {
-    Random random = new Random();
-    int number = random.nextInt(10);
-
-    String color = threadColor.substring(0, 3).toUpperCase();
-
-    String threadNumber = color + number.toString().padLeft(4, '0');
-    return threadNumber;
-  }
+  // String _generateThreadNumber(String threadColor) {
+  //   Random random = new Random();
+  //   int number = random.nextInt(10);
+  //
+  //   String color = threadColor.substring(0, 3).toUpperCase();
+  //
+  //   String threadNumber = color + number.toString().padLeft(4, '0');
+  //   return threadNumber;
+  // }
 
   void dispose() {
     super.dispose();
 
-    threadNumberController.dispose();
+    //threadNumberController.dispose();
 
     threadColorController.dispose();
 
@@ -266,30 +248,24 @@ class _AddCrochetThreadState extends State<AddCrochetThread> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  TextField(
-                    controller: threadNumberController,
-                    showCursor: true,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Thread Number',
-                    ),
-                  ),
+                  // TextField(
+                  //   controller: threadNumberController,
+                  //   showCursor: true,
+                  //   decoration: const InputDecoration(
+                  //     border: OutlineInputBorder(),
+                  //     labelText: 'Thread Number',
+                  //   ),
+                  // ),
                   TextFormField(
                     controller: threadColorController,
                     keyboardType: TextInputType.text,
-                    onChanged: (text) {
-                      threadNumberController.text = _generateThreadNumber(text);
-                    },
                     showCursor: true,
                     decoration: const InputDecoration(
                       labelText: 'Thread Color',
                     ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter thread color';
-                      }
-                      return null;
-                    },
+                    //onChanged: (text) {
+                    //threadNumberController.text = _generateThreadNumber(text);
+                    //},
                   ),
                   Container(
                     child: printText(),
@@ -399,12 +375,10 @@ class _AddCrochetThreadState extends State<AddCrochetThread> {
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: ElevatedButton(
-                        style: ButtonStyle(
-                            backgroundColor:
-                                MaterialStateProperty.all(Color(0xff997ABD))),
-                        child: const Text('Add Thread'),
                         //style: ,
-                        onPressed: () async {
+                        onPressed:
+                            //TODO: Refresh list tile on pressed
+                            () async {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                   content: Text('Saving crochet thread')));
@@ -412,9 +386,9 @@ class _AddCrochetThreadState extends State<AddCrochetThread> {
                           await CrochetThreadDatabaseHelper.instance
                               .addCrochetThread(
                             CrochetThreadModel(
-                              threadNumber: threadNumberController.text,
+                              //threadNumber: threadNumberController.text,
                               threadColor: threadColorController.text,
-                              image: path,
+                              //image: path,
                               brand: brandController.text,
                               material: materialController.text,
                               size: sizeController.text,
@@ -443,6 +417,7 @@ class _AddCrochetThreadState extends State<AddCrochetThread> {
 
                           Navigator.pop(context);
                         },
+                        child: Text("add thread"),
                       ),
                     ),
                   ),

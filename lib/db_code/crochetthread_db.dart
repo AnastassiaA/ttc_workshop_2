@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/material.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:ttc_workshop_2/models/crochetthread_model.dart';
 
-class CrochetThreadDatabaseHelper {
+class CrochetThreadDatabaseHelper extends ChangeNotifier {
   //CrochetThreadDatabase.ensureInitialized();
 
   CrochetThreadDatabaseHelper._privateConstructor();
@@ -30,9 +31,8 @@ class CrochetThreadDatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
     CREATE TABLE crochetthread(
-      threadNumber TEXT PRIMARY KEY
-      threadColor TEXT,
-      image BLOB,
+      threadNumber INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+      threadcolor TEXT,  
       brand TEXT,
       material TEXT,
       size TEXT,
@@ -52,6 +52,7 @@ class CrochetThreadDatabaseHelper {
       crochetThread.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+    notifyListeners();
   }
 
   Future<List<CrochetThreadModel>> getCrochetThread() async {
@@ -62,26 +63,8 @@ class CrochetThreadDatabaseHelper {
     List<CrochetThreadModel> crochetThreadList = crochetThread.isNotEmpty
         ? crochetThread.map((e) => CrochetThreadModel.fromMap(e)).toList()
         : [];
+    notifyListeners();
     return crochetThreadList;
-
-    //final List<Map<String, dynamic>> maps = await db.query('crochetthread');
-
-    // Convert the List<Map<String, dynamic> into a List<Dog>.
-    // return List.generate(maps.length, (i) {
-    //   return CrochetThreadModel(
-    //     threadNumber: maps[i]['threadnumber'],
-    //     threadColor: maps[i]['threadcolor'],
-    //     image: maps[i]['image'],
-    //     brand: maps[i]['brand'],
-    //     material: maps[i]['material'],
-    //     size: maps[i]['size'],
-    //     availableWeight: maps[i]['availableweight'],
-    //     pricePerGram: maps[i]['pricepergram'],
-    //     weight: maps[i]['weight'],
-    //     reccHookNeedle: maps[i]['recchookneedle'],
-    //     cost: maps[i]['cost'],
-    //   );
-    // });
   }
 
   Future<void> updateCrochetThread(CrochetThreadModel crochetThread) async {
@@ -92,9 +75,10 @@ class CrochetThreadDatabaseHelper {
       crochetThread.toMap(),
       where: 'threadnumber = ?',
       whereArgs: [
-        crochetThread.threadNumber
+        ['threadnumber']
       ], // Pass the id as a whereArg to prevent SQL injection.
     );
+    notifyListeners();
   }
 
   Future<void> deleteCrochetThread(String threadNumber) async {
@@ -107,5 +91,6 @@ class CrochetThreadDatabaseHelper {
         threadNumber
       ], // Pass the id as a whereArg to prevent SQL injection.
     );
+    notifyListeners();
   }
 }

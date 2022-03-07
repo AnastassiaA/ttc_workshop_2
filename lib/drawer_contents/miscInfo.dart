@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'brands.dart';
-import 'drawer.dart';
+import '../brands.dart';
+import '../drawer.dart';
 
 class MiscInfo extends StatelessWidget {
   @override

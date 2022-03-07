@@ -1,27 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:ttc_workshop_2/cards/crochetHookCard.dart';
+import 'package:ttc_workshop_2/db_code/databaseUtilities.dart';
+import 'package:ttc_workshop_2/models/crochethook_model.dart';
 
-import 'cards/crochetThreadCard.dart';
-import 'db_code/crochetthread_db.dart';
-import 'models/crochetthread_model.dart';
-
-class CrochetThreadTab extends StatefulWidget with ChangeNotifier {
+class CrochetHookTab extends StatefulWidget {
   @override
-  _CrochetThreadTabState createState() {
-    return _CrochetThreadTabState();
+  _CrochetHookTabState createState() {
+    return _CrochetHookTabState();
   }
 }
 
-class _CrochetThreadTabState extends State<CrochetThreadTab> {
+class _CrochetHookTabState extends State<CrochetHookTab> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: CrochetThreadDatabaseHelper.instance.getCrochetThread(),
-      builder: (context, AsyncSnapshot<List<CrochetThreadModel>> snapshot) {
+      future: DatabaseHelper.instance.getCrochetHook(),
+      builder: (context, AsyncSnapshot<List<CrochetHookModel>> snapshot) {
         if (snapshot.hasData) {
           return ListView.builder(
             itemCount: snapshot.data!.length,
             itemBuilder: (context, index) {
-              CrochetThreadModel _model = snapshot.data![index];
+              CrochetHookModel _model = snapshot.data![index];
               return Card(
                 child: ListTile(
                   leading: CircleAvatar(
@@ -29,14 +28,11 @@ class _CrochetThreadTabState extends State<CrochetThreadTab> {
                     radius: 30,
                     //child: Image.asset('images/default_image.png'),
                   ),
-                  title: Text(_model.threadColor),
-                  subtitle: Text(_model.brand),
-                  trailing: Text(_model.availableWeight.toString() + ' g'),
+                  title: Text(_model.hookSize),
+                  trailing: Text(_model.hookType),
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) => CrochetThread(),
-                    ),
+                    MaterialPageRoute(builder: (context) => CrochetHook()),
                   ),
                 ),
                 shape:
@@ -47,7 +43,7 @@ class _CrochetThreadTabState extends State<CrochetThreadTab> {
           );
         }
         return Center(
-          child: Text('No Crochet Thread added'),
+          child: Text('No Crochet Hook added'),
         );
       },
     );

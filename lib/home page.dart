@@ -2,9 +2,14 @@ import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ttc_workshop_2/order.dart';
+import 'package:ttc_workshop_2/drawer_contents/orderHome.dart';
+import 'db_code/databaseUtilities.dart';
 import 'drawer.dart';
 import 'package:ttc_workshop_2/db_code/db_expense.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+
+import 'expenses.dart';
+import 'forms/addOrder.dart';
 //import 'package:charts_flutter/flutter.dart' as charts;
 
 class MyApp extends StatelessWidget {
@@ -24,31 +29,35 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // late Future<int> _totalExpense = Future<String>.delayed(
-  //   const Duration(seconds: 2),
-  //   () => 'Loading',
-  // ) as Future<int>;
-
-  // @override
-  // initState() {
-  //   super.initState();
-  //   _totalExpense = Dbhelper.main().calculateTotal();
-  // }
-
-  //or?
-
   final databHelper = ExpenseDatabasehelper().main();
+  int number = 0;
+
+  void countOrders() async {
+    int? count = await DatabaseHelper.instance.numberOfOrders();
+
+    setState(() {
+      number = count;
+    });
+
+    print(number);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    countOrders();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        backgroundColor: const Color(0xffE9DCE5),
+        backgroundColor: const Color(0xff693b58),
         appBar: AppBar(
           backgroundColor: const Color(0xff693b58),
-          foregroundColor: Colors.white,
+          //foregroundColor: Colors.white,
           //shape: ShapeBorder.lerp(a, b, t),
-          title: const Text('TTC Workshop'),
+          //title: const Text('Dont Delete App'),
         ),
         drawer: MyDrawer(),
         floatingActionButton: ExpandableFab(
@@ -61,7 +70,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddOrder()),
+                  MaterialPageRoute(builder: (context) => ExpenseForm()),
                 );
               },
               icon: Icon(Icons.add),
@@ -74,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddOrder()),
+                  MaterialPageRoute(builder: (context) => AddOrderForm()),
                 );
               },
               icon: Icon(Icons.add),
@@ -82,119 +91,127 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              //ExpenseAndRevenueChart(data: data),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: SizedBox(
-                      height: 70.0,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            //ExpenseAndRevenueChart(data: data),
+            Row(
+              children: <Widget>[
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  width: MediaQuery.of(context).size.width * 0.5,
+                  child: Card(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          child:
+                              Text('$number', style: TextStyle(fontSize: 70)),
+                        ),
+                        Text('Orders Pending'),
+                      ],
+                    ),
+                  ),
+                ),
+                Column(
+                  children: [
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      width: MediaQuery.of(context).size.width * 0.5,
                       child: Card(
-                        //color: const Color(0xff78184A),
-                        child: Column(
+                        child: Row(
                           children: [
-                            Text('Expense'),
-                            // FutureBuilder<int>(
-                            //   future: _totalExpense,
-                            //   builder: (ex, snapshot) {},
-                            // )
+                            Icon(Icons.account_balance_wallet_rounded),
+                            Icon(Icons.attach_money),
+                            Text('Business wallet'),
                           ],
                         ),
                       ),
                     ),
-                  ),
-                  Expanded(
-                    child: SizedBox(
-                      height: 70.0,
-                      child: Card(child: Text('Revenue')),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.1,
+                      width: MediaQuery.of(context).size.width * 0.5,
+                      child: Card(
+                        child: Container(
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.attach_money,
+                                color: Colors.green,
+                              ),
+                              Text('[Sales]'),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                  //SizedBox(),
-                ],
-              ),
-              Row(
-                children: <Widget>[
-                  Expanded(
-                    child: SizedBox(
-                      height: 70.0,
-                      child: Card(child: Text('Orders In Progress')),
+                    Card(
+                      child: Container(
+                        height: MediaQuery.of(context).size.height * 0.1,
+                        width: MediaQuery.of(context).size.width * 0.47,
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.attach_money,
+                              color: Colors.red,
+                            ),
+                            Text('[Expense]')
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: SizedBox(
-                      height: 70.0,
-                      child: Card(child: Text('Orders Pending')),
-                    ),
-                  ),
-                  //SizedBox(),
-                ],
-              ),
-            ],
-          ),
+                  ],
+                ),
+                //SizedBox(),
+              ],
+            ),
+
+            // Container(
+            //   height: MediaQuery.of(context).size.height * 0.48,
+            //   child: CarouselSlider(
+            //     items: [
+            //       Container(
+            //         child: Card(
+            //           child: Container(
+            //               width: MediaQuery.of(context).size.width * 1,
+            //               child: Text('Android')),
+            //         ),
+            //       ),
+            //       Container(
+            //         child: Card(
+            //           child: Container(
+            //               width: MediaQuery.of(context).size.width * 1,
+            //               child: Text('iOS')),
+            //         ),
+            //       ),
+            //       Container(
+            //         child: Card(
+            //           child: Container(
+            //               width: MediaQuery.of(context).size.width * 1,
+            //               child: Text('Desktop')),
+            //         ),
+            //       ),
+            //       Container(
+            //         child: Card(
+            //           child: Container(
+            //               width: MediaQuery.of(context).size.width * 1,
+            //               child: Text('Web')),
+            //         ),
+            //       )
+            //     ],
+            //
+            //     //Slider Container properties
+            //     options: CarouselOptions(
+            //       autoPlay: false,
+            //     ),
+            //   ),
+            // ),
+          ],
         ),
       ),
     );
   }
-
-  // final List<ExpenseAndRevenue> data = [
-  //   ExpenseAndRevenue(
-  //     type: "Expense",
-  //     amount: 10000, //TODO get this from database
-  //     barColor: charts.ColorUtil.fromDartColor(const Color(0xff67032F)),
-  //     //charts.ColorUtil.fromDartColor(Colors.red),
-  //   ),
-  //   ExpenseAndRevenue(
-  //     type: "Revenue",
-  //     amount: 15000, //TODO get this from database
-  //     barColor: charts.ColorUtil.fromDartColor(const Color(0xffE0B0FF)),
-  //   ),
-  // ];
 }
-
-// class ExpenseAndRevenue {
-//   final String type;
-//   final double amount;
-//   final charts.Color barColor;
-//
-//   ExpenseAndRevenue(
-//       {required this.type, required this.amount, required this.barColor});
-// }
-
-// class ExpenseAndRevenueChart extends StatelessWidget {
-//   final List<ExpenseAndRevenue> data;
-//
-//   ExpenseAndRevenueChart({required this.data});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     List<charts.Series<ExpenseAndRevenue, String>> series = [
-//       charts.Series(
-//         id: "Expense and Revenue",
-//         data: data,
-//         domainFn: (ExpenseAndRevenue series, _) => series.type,
-//         measureFn: (ExpenseAndRevenue series, _) => series.amount,
-//         colorFn: (ExpenseAndRevenue series, _) => series.barColor,
-//       )
-//     ];
-//     return Container(
-//       height: 400,
-//       padding: EdgeInsets.all(20),
-//       child: Card(
-//         child: Column(
-//           children: <Widget>[
-//             Text(
-//               "How Things Are Going",
-//               style: Theme.of(context).textTheme.bodyText1,
-//             ),
-//             Expanded(child: charts.BarChart(series, animate: true))
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
 
 @immutable
 class ExpandableFab extends StatefulWidget {

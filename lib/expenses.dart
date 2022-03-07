@@ -19,12 +19,15 @@ class ExpenseState extends State<ExpenseHome> {
     return SafeArea(
       child: Scaffold(
         backgroundColor: const Color(0xffE9DCE5),
-        appBar: AppBar(
-          backgroundColor: const Color(0xff693b58),
-          foregroundColor: Colors.white,
-          title: const Text('Expenses'),
-        ),
+        // appBar: AppBar(
+        //   backgroundColor: const Color(0xff693b58),
+        //   foregroundColor: Colors.white,
+        //   title: const Text('Expenses'),
+        // ),
         drawer: MyDrawer(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {},
+        ),
         body: ListView.builder(
           itemCount: items.length,
           itemBuilder: (context, index) {
@@ -32,6 +35,29 @@ class ExpenseState extends State<ExpenseHome> {
               title: Text('${items[index]}'),
             );
           },
+        ),
+      ),
+    );
+  }
+}
+
+class ExpenseForm extends StatefulWidget {
+  @override
+  _ExpenseFormState createState() {
+    return _ExpenseFormState();
+  }
+}
+
+class _ExpenseFormState extends State<ExpenseForm> {
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: const Color(0xffE9DCE5),
+        appBar: AppBar(
+          backgroundColor: const Color(0xff693b58),
+          foregroundColor: Colors.white,
+          title: const Text('Expense Form'),
         ),
       ),
     );
